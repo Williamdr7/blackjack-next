@@ -14,3 +14,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.slick-track {
+  display: flex;
+}
+
+.slick-list {
+  width: 150px;
+  padding: 0 !important;
+}

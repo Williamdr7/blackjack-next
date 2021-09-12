@@ -1,0 +1,14 @@
+.container {
+  margin: 30px auto;
+  width: 60% !important;
+  text-align: center;
+  display: flex !important;
+  justify-content: space-between !important;
+
+  @media (max-width: 1280px) {
+    display: block !important;
+  }
+}
+.stopIcon {
+  margin-right: 10px;
+}
