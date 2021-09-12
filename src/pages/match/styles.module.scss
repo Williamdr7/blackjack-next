@@ -1,0 +1,21 @@
+.gridContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.gridItem {
+  position: relative !important;
+  border: 1px solid #555 !important;
+}
+.login {
+  margin-left: auto;
+  font-size: 18px;
+}
+.carrousel {
+  width: 500px !important;
+}
+.dealer {
+  position: absolute;
+  left: 10px;
+  top: 20px;
+}

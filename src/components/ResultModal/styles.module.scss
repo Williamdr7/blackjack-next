@@ -1,0 +1,25 @@
+.alert {
+  height: 80px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  margin: auto;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  border: none !important;
+}
+
+.content {
+  margin: auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  border: none !important;
+}
+.restartIcon {
+  margin: 30px auto !important;
+  text-align: center !important;
+}
