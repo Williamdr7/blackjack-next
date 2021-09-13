@@ -33,8 +33,7 @@ function switchValue(value: string) {
     return parseInt(type);
   }
 
-  if (type === "J" || type === "Q" || type === "K" || value == "0S") {
-    console.log(value);
+  if (type === "J" || type === "Q" || type === "K" || type === "0") {
     return 10;
   }
 

@@ -8,11 +8,18 @@ import MatchContext, { PlayerInterface } from "../../context/MatchContext";
 import ResultModal from "../../components/ResultModal/ResultModal";
 
 const Match: NextPage = () => {
-  const { players, setPlayers, matchStatus } = useContext(MatchContext);
+  const { players, setPlayers, matchStatus, result, resetContext } =
+    useContext(MatchContext);
 
+  function handleClose() {
+    resetContext();
+  }
   return (
     <>
-      <ResultModal isOpen={matchStatus === "finished"} playerId={1} />
+      <ResultModal
+        handleClose={handleClose}
+        isOpen={matchStatus === "finished"}
+      />
       <Grid container className={styles.gridContainer}>
         {players
           .sort((a, b) => a.id - b.id)
@@ -24,7 +31,7 @@ const Match: NextPage = () => {
               //@ts-ignore
               xs={12 / (players.length || 1)}
             >
-              {player.isDeal && (
+              {player.isDeal ? (
                 <Typography
                   className={styles.dealer}
                   variant="h4"
@@ -32,6 +39,15 @@ const Match: NextPage = () => {
                   noWrap
                 >
                   *Dealer
+                </Typography>
+              ) : (
+                <Typography
+                  className={styles.dealer}
+                  variant="h4"
+                  color="secondary"
+                  noWrap
+                >
+                  Player {player.id}
                 </Typography>
               )}
               <Counter count={player.roundPoints} />

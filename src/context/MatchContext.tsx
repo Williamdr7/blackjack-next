@@ -12,15 +12,19 @@ type matchContextType = {
   matchStatus: string;
   setMatchStatus: any;
   changePlayerStatus: any;
+  result: Array<ResultInterface>;
+  resetContext: any;
 };
 
 const matchContextDefaultValues: matchContextType = {
   players: [],
+  result: [],
   setPlayers: () => null,
   requestCard: () => null,
   matchStatus: "playersRound",
   setMatchStatus: () => null,
   changePlayerStatus: () => null,
+  resetContext: () => null,
 };
 
 const MatchContext = createContext<matchContextType>(matchContextDefaultValues);
@@ -51,7 +55,7 @@ function MatchContextProvider({ children }: any) {
   const [players, setPlayers] = useState<Array<PlayerInterface>>([]);
   const [deckId, setDeckId] = useState<string>("");
   const [matchStatus, setMatchStatus] = useState<string>("playersRound");
-  const [result, setResult] = useState<Array<ResultInterface>>();
+  const [result, setResult] = useState<Array<ResultInterface>>([]);
 
   async function generateDeck() {
     let newPlayers = [...setInitialPlayers(playersNumber)];
@@ -124,12 +128,16 @@ function MatchContextProvider({ children }: any) {
     setPlayers(newPlayers);
   }
 
+  function resetContext() {
+    setPlayersNumber(2);
+    setMatchStatus("playersRound");
+    setResult([]);
+  }
+
   useEffect(() => {
-    verifyResult(players, setResult);
+    verifyResult(players, resetContext);
     verifyMatchStatus(players, setMatchStatus);
   }, [players]);
-
-  console.log("result", result);
 
   return (
     <MatchContext.Provider
@@ -138,6 +146,7 @@ function MatchContextProvider({ children }: any) {
         matchStatus,
         result,
         setPlayers,
+        resetContext,
         requestCard,
         setMatchStatus,
         changePlayerStatus,

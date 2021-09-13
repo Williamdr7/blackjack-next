@@ -8,7 +8,7 @@ const DeckService = {
 export default DeckService;
 
 function createDeck() {
-  return axios.get(`https://www.deckofcardsapi.com/api/deck/new/`);
+  return axios.get(`https://www.deckofcardsapi.com/api/deck/new/shuffle`);
 }
 
 function getCards(deckId: string, count: number) {
