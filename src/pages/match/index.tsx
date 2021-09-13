@@ -8,12 +8,22 @@ import MatchContext, { PlayerInterface } from "../../context/MatchContext";
 import ResultModal from "../../components/ResultModal/ResultModal";
 
 const Match: NextPage = () => {
-  const { players, setPlayers, matchStatus, result, resetContext } =
-    useContext(MatchContext);
+  const { players, matchStatus, resetContext } = useContext(MatchContext);
 
   function handleClose() {
     resetContext();
   }
+
+  const showDealerScore = (isDealer: boolean, i: number) => {
+    if (
+      isDealer &&
+      i === 0 &&
+      (matchStatus === "dealerRound" || matchStatus === "finished")
+    )
+      return true;
+    else return false;
+  };
+
   return (
     <>
       <ResultModal
@@ -23,7 +33,7 @@ const Match: NextPage = () => {
       <Grid container className={styles.gridContainer}>
         {players
           .sort((a, b) => a.id - b.id)
-          .map((player: PlayerInterface) => (
+          .map((player: PlayerInterface, i: number) => (
             <Grid
               className={styles.gridItem}
               key={player.id}
@@ -50,9 +60,12 @@ const Match: NextPage = () => {
                   Player {player.id}
                 </Typography>
               )}
-              <Counter count={player.roundPoints} />
+              {!player.isDeal || showDealerScore(player.isDeal, i) ? (
+                <Counter count={player.roundPoints} />
+              ) : null}
               <Deck
-                isDealer={player.isDeal}
+                showDealerScore={showDealerScore}
+                isDealer={!!player.isDeal}
                 playerId={player.id}
                 cards={player.cards}
               />

@@ -1,6 +1,7 @@
+import router from "next/router";
 import { createContext, useEffect, useState } from "react";
+import generateDeck from "../helpers/generateDeck";
 import setCardValue from "../helpers/setCardValue";
-import setInitialPlayers from "../helpers/setInitialPlayers";
 import verifyMatchStatus from "../helpers/verifyMatchStatus";
 import verifyResult from "../helpers/verifyResult";
 import DeckService from "../services/DeckService";
@@ -11,6 +12,7 @@ type matchContextType = {
   requestCard: any;
   matchStatus: string;
   setMatchStatus: any;
+  setPlayersNumber: any;
   changePlayerStatus: any;
   result: Array<ResultInterface>;
   resetContext: any;
@@ -25,6 +27,7 @@ const matchContextDefaultValues: matchContextType = {
   setMatchStatus: () => null,
   changePlayerStatus: () => null,
   resetContext: () => null,
+  setPlayersNumber: () => null,
 };
 
 const MatchContext = createContext<matchContextType>(matchContextDefaultValues);
@@ -51,92 +54,62 @@ export interface ResultInterface {
 
 function MatchContextProvider({ children }: any) {
   const [playersNumber, setPlayersNumber] = useState<number>(4);
-  const [unusedDeck, setUnusedDeck] = useState<Array<CardInterface>>([]);
   const [players, setPlayers] = useState<Array<PlayerInterface>>([]);
   const [deckId, setDeckId] = useState<string>("");
   const [matchStatus, setMatchStatus] = useState<string>("playersRound");
   const [result, setResult] = useState<Array<ResultInterface>>([]);
 
-  async function generateDeck() {
-    let newPlayers = [...setInitialPlayers(playersNumber)];
-    DeckService.createDeck()
-      .then(({ data }) => {
-        DeckService.getCards(data.deck_id, playersNumber * 2).then(
-          (response) => {
-            let cardsArray = response.data.cards;
-            for (let i = 0; i < cardsArray.length; i++) {
-              if (i < playersNumber) {
-                const olderPlayer = newPlayers.find(
-                  (player) => player.id === i
-                );
-                if (olderPlayer) {
-                  newPlayers = newPlayers.filter((player) => player.id !== i);
-                  newPlayers = [
-                    ...newPlayers,
-                    {
-                      ...olderPlayer,
-                      cards: [...olderPlayer.cards, cardsArray[i]],
-                    },
-                  ];
-                }
-              } else {
-                const olderPlayer = newPlayers.find(
-                  (player) => player.id === i - playersNumber
-                );
-
-                if (olderPlayer) {
-                  newPlayers = newPlayers.filter(
-                    (player) => player.id !== i - playersNumber
-                  );
-                  newPlayers = [
-                    ...newPlayers,
-                    {
-                      ...olderPlayer,
-                      cards: [...olderPlayer.cards, cardsArray[i]],
-                    },
-                  ];
-                }
-              }
-            }
-            setCardValue(newPlayers, setPlayers);
-            setDeckId(data.deck_id);
-          }
-        );
-      })
-      .catch((error) => console.log(error));
-  }
-
   useEffect(() => {
-    generateDeck();
+    generateDeck(playersNumber)
+      .then((result) => {
+        setPlayers(setCardValue(result.players));
+        setDeckId(result.deckId);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playersNumber]);
 
   function requestCard(playerId: number) {
-    let olderPlayer = players.find((player) => player.id === playerId);
     DeckService.getCards(deckId, 1).then(({ data }) => {
-      let newPlayers = [
-        ...players.filter((player) => player.id !== playerId),
-        { ...olderPlayer, cards: [...olderPlayer?.cards, data.cards[0]] },
+      let newPlayers = [...players];
+
+      newPlayers[playerId].cards = [
+        ...newPlayers[playerId].cards,
+        data.cards[0],
       ];
-      setCardValue(newPlayers, setPlayers);
+
+      setPlayers(setCardValue(newPlayers));
+      updateStatuses(newPlayers);
     });
   }
 
   function changePlayerStatus(id: number, status: string) {
-    let newPlayers = players;
-    newPlayers[id] = { ...newPlayers[id], playerStatus: status };
+    let newPlayers = [...players];
+    newPlayers[id].playerStatus = status;
     setPlayers(newPlayers);
+    updateStatuses(newPlayers);
   }
 
   function resetContext() {
+    setPlayers([]);
     setPlayersNumber(2);
     setMatchStatus("playersRound");
     setResult([]);
+    router.push("/");
+  }
+
+  function updateStatuses(newPlayers: Array<PlayerInterface>) {
+    const currentResult = verifyResult(newPlayers);
+    const currentStatus = verifyMatchStatus(newPlayers, currentResult);
+    setMatchStatus(currentStatus);
+    setResult(currentResult);
   }
 
   useEffect(() => {
-    verifyResult(players, resetContext);
-    verifyMatchStatus(players, setMatchStatus);
+    updateStatuses(players);
   }, [players]);
 
   return (
@@ -150,6 +123,7 @@ function MatchContextProvider({ children }: any) {
         requestCard,
         setMatchStatus,
         changePlayerStatus,
+        setPlayersNumber,
       }}
     >
       {children}

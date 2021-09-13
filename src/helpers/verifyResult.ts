@@ -1,9 +1,6 @@
 import { PlayerInterface, ResultInterface } from "../context/MatchContext";
 
-export default function verifyResult(
-  players: Array<PlayerInterface>,
-  setResult: any
-) {
+export default function verifyResult(players: Array<PlayerInterface>) {
   let result: Array<ResultInterface> = [];
   const finished = !players.find((player) => player.playerStatus !== "stoped");
   let highResult: any = { playerId: null, score: null };
@@ -34,7 +31,5 @@ export default function verifyResult(
     };
   }
 
-  console.log(highResult);
-
-  setResult(result);
+  return result;
 }

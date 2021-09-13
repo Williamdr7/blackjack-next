@@ -1,29 +1,30 @@
 import { PlayerInterface } from "../context/MatchContext";
 
-export default function setCardValue(
-  players: Array<PlayerInterface>,
-  setPlayers: any
-) {
+export default function setCardValue(players: Array<PlayerInterface>) {
   let newPlayers = players;
   players.map((player, i: number) => {
     let playerScore = 0;
-    let hasAs = false;
+    let hasAs = 0;
     player.cards.map((card: any) => {
       const cardValue = switchValue(card.code);
       if (cardValue !== "A") {
         playerScore += cardValue;
       } else {
-        hasAs = true;
+        hasAs++;
       }
     });
-    if (hasAs && playerScore + 11 > 21) {
-      playerScore += 1;
+
+    for (let i = 0; i < hasAs; i++) {
+      if (playerScore + 11 > 21) {
+        playerScore += 1;
+      }
+      if (playerScore + 11 <= 21) playerScore += 11;
     }
-    if (hasAs && playerScore + 11 <= 21) playerScore += 11;
+
     newPlayers[i].roundPoints = playerScore;
   });
 
-  setPlayers(newPlayers);
+  return newPlayers;
 }
 
 function switchValue(value: string) {

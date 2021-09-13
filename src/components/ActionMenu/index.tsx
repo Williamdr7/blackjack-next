@@ -1,9 +1,4 @@
-import React, {
-  MouseEventHandler,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useContext, useState } from "react";
 import { Container, Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import PanToolIcon from "@material-ui/icons/PanTool";
@@ -16,7 +11,7 @@ type Props = {
 };
 
 export default function ActionMenu({ isDealer, playerId }: Props) {
-  const { matchStatus, requestCard, changePlayerStatus, players } =
+  const { matchStatus, requestCard, changePlayerStatus, players, result } =
     useContext(MatchContext);
   const [stoped, setStoped] = useState<boolean>(false);
 
@@ -27,12 +22,22 @@ export default function ActionMenu({ isDealer, playerId }: Props) {
       setStoped(true);
     }
   };
+
+  const iconsDisabled =
+    result &&
+    result.length > 0 &&
+    result[playerId] &&
+    result[playerId].status === "loser";
   return (
     <Container className={styles.container}>
       <Fab
         onClick={() => handleAction("request")}
         variant="extended"
-        disabled={matchStatus === "playersRound" && isDealer}
+        disabled={
+          (matchStatus !== "dealerRound" && isDealer) ||
+          (players[playerId].playerStatus === "stoped" && !isDealer) ||
+          iconsDisabled
+        }
         color="primary"
         aria-label="add"
       >
@@ -42,7 +47,9 @@ export default function ActionMenu({ isDealer, playerId }: Props) {
 
       <Fab
         onClick={() => handleAction("stop")}
-        disabled={stoped}
+        disabled={
+          stoped || iconsDisabled || (matchStatus !== "dealerRound" && isDealer)
+        }
         variant="extended"
         color="secondary"
         aria-label="edit"

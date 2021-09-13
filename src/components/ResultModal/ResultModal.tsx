@@ -12,7 +12,7 @@ export default function ResultModal({ handleClose, isOpen }: any) {
     <Modal open={isOpen} className={styles.container} onClose={resetContext}>
       <div className={styles.content}>
         <Typography variant="h3" color="primary" noWrap>
-          Player {winner?.playerId} Venceu!
+          Player {winner?.playerId !== 0 ? winner?.playerId : "Dealer"} Venceu!
         </Typography>
         <div className={styles.restartIcon}>
           <Fab
