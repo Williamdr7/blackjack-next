@@ -7,11 +7,17 @@ export default function verifyMatchStatus(
   let currentPlayers = players;
   result
     .filter((res) => res.status === "loser")
-    .map((player) => (currentPlayers[player.playerId].playerStatus = "stoped"));
+    .map((player) => {
+      if (currentPlayers[player.playerId].playerStatus !== "surrender") {
+        currentPlayers[player.playerId].playerStatus = "stoped";
+      }
+    });
 
   const hasPlayerPlaying = currentPlayers.find(
     (player: PlayerInterface) =>
-      player.playerStatus !== "stoped" && !player.isDeal
+      player.playerStatus !== "stoped" &&
+      player.playerStatus !== "surrender" &&
+      !player.isDeal
   );
 
   const allPlayersAreLosers =

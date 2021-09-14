@@ -36,7 +36,7 @@ const Match = (props: Props) => {
     return false;
   };
 
-  if (loading || !result || !result.length || !result[1].playerId)
+  if (loading || !result || !result.length || !result[1])
     return <h4>Loading</h4>;
   return (
     <>
@@ -81,6 +81,17 @@ const Match = (props: Props) => {
                     : "?"
                 }
               />
+
+              <Typography
+                className={styles.status}
+                variant="h6"
+                color="primary"
+                noWrap
+              >
+                {result[player.id].status === "loser"
+                  ? "LOSER"
+                  : player.playerStatus.toUpperCase()}
+              </Typography>
 
               <Typography
                 className={styles.status}

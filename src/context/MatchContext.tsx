@@ -125,10 +125,9 @@ function MatchContextProvider({ children }: any) {
     let newPlayers = players;
     newPlayers[id].playerStatus = "surrender";
 
-    console.log(newPlayers);
+    setPlayers(newPlayers);
     setRoundTime(updateRoundTime(newPlayers, roundTime));
     updateStatuses(newPlayers);
-    setPlayers(newPlayers);
   }
 
   function updateStatuses(newPlayers: Array<PlayerInterface>) {
@@ -141,7 +140,6 @@ function MatchContextProvider({ children }: any) {
 
   useEffect(() => {
     if (players.length) {
-      console.log("Chamou set geral");
       updateStatuses(players);
     }
   }, [players]);

@@ -65,9 +65,14 @@ export default function verifyResult(players: Array<PlayerInterface>) {
   });
 
   if (!result.find((res) => res.status === "winner") && finished) {
-    const hasDraw = players.filter(
-      (res) => res.roundPoints === highResult.score
+    const maxResult = Math.max(
+      ...players.map((player) => {
+        if (result[player.id].status !== "loser") {
+          return player.roundPoints;
+        } else return 0;
+      })
     );
+    const hasDraw = players.filter((res) => res.roundPoints === maxResult);
     if (
       hasDraw.length > 1 &&
       players[highResult.playerId].playerStatus !== "surrender"
@@ -79,8 +84,8 @@ export default function verifyResult(players: Array<PlayerInterface>) {
         };
       });
     } else {
-      result[highResult.playerId] = {
-        playerId: highResult.playerId,
+      result[hasDraw[0].id] = {
+        playerId: hasDraw[0].id,
         status: "winner",
       };
     }
@@ -92,8 +97,6 @@ export default function verifyResult(players: Array<PlayerInterface>) {
       status: "winner",
     };
   }
-
-  console.log("newPlayers", players);
 
   return result;
 }
