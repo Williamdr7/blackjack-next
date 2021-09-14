@@ -6,6 +6,7 @@
 .gridItem {
   position: relative !important;
   border: 1px solid #555 !important;
+  height: calc(100vh - 65px);
 }
 .login {
   margin-left: auto;

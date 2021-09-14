@@ -1,5 +1,4 @@
 import { Fab, Modal, Typography } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
 import styles from "./styles.module.scss";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import { useContext } from "react";

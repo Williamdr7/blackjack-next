@@ -7,7 +7,7 @@ import { MatchContextProvider } from "../context/MatchContext";
 
 const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   return (
-    <>
+    <div style={{ height: "100%" }}>
       <Head>
         <title>BlackJack - Next.js</title>
       </Head>
@@ -15,7 +15,7 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       <MatchContextProvider>
         <Component {...pageProps} />
       </MatchContextProvider>
-    </>
+    </div>
   );
 };
 

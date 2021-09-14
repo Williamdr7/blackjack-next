@@ -1,6 +1,7 @@
 .cardsContainer {
   margin: auto;
-  margin-top: 50%;
+  position: absolute;
+  bottom: 120px;
 }
 .cardContainer {
   display: flex !important;

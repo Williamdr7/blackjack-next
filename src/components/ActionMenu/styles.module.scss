@@ -1,12 +1,15 @@
 .container {
   margin: 30px auto;
-  width: 60% !important;
+  width: 100% !important;
+  position: absolute;
+  bottom: 20px;
   text-align: center;
   display: flex !important;
   justify-content: space-between !important;
 
   @media (max-width: 1280px) {
     display: block !important;
+    bottom: 0;
   }
 }
 .stopIcon {

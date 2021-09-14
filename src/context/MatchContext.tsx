@@ -103,7 +103,7 @@ function MatchContextProvider({ children }: any) {
     setPlayersNumber(0);
     setMatchStatus("playersRound");
     setResult([]);
-    router.push("/");
+    router.reload();
   }
 
   function updateStatuses(newPlayers: Array<PlayerInterface>) {

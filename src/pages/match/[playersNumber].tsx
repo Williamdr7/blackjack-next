@@ -20,7 +20,6 @@ const Match = (props: Props) => {
 
   useEffect(() => {
     setPlayersNumber(props.numberOfPlayers);
-    console.log(props.numberOfPlayers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
 
