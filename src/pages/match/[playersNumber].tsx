@@ -11,12 +11,8 @@ type Props = {
   numberOfPlayers: number;
 };
 const Match = (props: Props) => {
-  const { players, matchStatus, resetContext, result, setPlayersNumber } =
+  const { players, matchStatus, roundTime, result, setPlayersNumber } =
     useContext(MatchContext);
-
-  function handleClose() {
-    resetContext();
-  }
 
   useEffect(() => {
     setPlayersNumber(props.numberOfPlayers);
@@ -33,18 +29,23 @@ const Match = (props: Props) => {
     else return false;
   };
 
+  const isTimeToPlay = (playerId: number) => {
+    if (roundTime === playerId) {
+      return true;
+    }
+    return false;
+  };
   return (
     <>
-      <ResultModal
-        handleClose={handleClose}
-        isOpen={matchStatus === "finished"}
-      />
+      <ResultModal isOpen={matchStatus === "finished"} />
       <Grid container className={styles.gridContainer}>
         {players
           .sort((a, b) => a.id - b.id)
           .map((player: PlayerInterface, i: number) => (
             <Grid
-              className={styles.gridItem}
+              className={`${styles.gridItem} ${
+                isTimeToPlay(player.id) && styles.playing
+              }`}
               key={player.id}
               item
               //@ts-ignore
@@ -69,9 +70,14 @@ const Match = (props: Props) => {
                   Player {player.id}
                 </Typography>
               )}
-              {!player.isDeal || showDealerScore(player.isDeal, i) ? (
-                <Counter count={player.roundPoints} />
-              ) : null}
+
+              <Counter
+                count={
+                  !player.isDeal || showDealerScore(player.isDeal, i)
+                    ? player.roundPoints
+                    : "?"
+                }
+              />
 
               <Typography
                 className={styles.status}

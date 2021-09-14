@@ -3,7 +3,8 @@ import styles from "./styles.module.scss";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import { useContext } from "react";
 import MatchContext from "../../context/MatchContext";
-export default function ResultModal({ handleClose, isOpen }: any) {
+
+export default function ResultModal({ isOpen }: any) {
   const { result, resetContext } = useContext(MatchContext);
   const winner = result.find((player) => player.status === "winner");
   const draw = result.filter((player) => player.status === "draw");

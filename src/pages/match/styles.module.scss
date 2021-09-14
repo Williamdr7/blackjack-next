@@ -5,8 +5,12 @@
 
 .gridItem {
   position: relative !important;
-  border: 1px solid #555 !important;
+  border: 1px solid #555;
   height: calc(100vh - 65px);
+}
+
+.playing {
+  border: 4px solid red !important;
 }
 .login {
   margin-left: auto;

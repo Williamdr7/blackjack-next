@@ -4,6 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import PanToolIcon from "@material-ui/icons/PanTool";
 import styles from "./styles.module.scss";
 import MatchContext from "../../context/MatchContext";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 type Props = {
   isDealer: boolean;
@@ -11,8 +12,15 @@ type Props = {
 };
 
 export default function ActionMenu({ isDealer, playerId }: Props) {
-  const { matchStatus, requestCard, changePlayerStatus, players, result } =
-    useContext(MatchContext);
+  const {
+    matchStatus,
+    requestCard,
+    changePlayerStatus,
+    players,
+    result,
+    roundTime,
+    surrender,
+  } = useContext(MatchContext);
   const [stoped, setStoped] = useState<boolean>(false);
 
   const handleAction = (type: string) => {
@@ -24,10 +32,11 @@ export default function ActionMenu({ isDealer, playerId }: Props) {
   };
 
   const iconsDisabled =
-    result &&
-    result.length > 0 &&
-    result[playerId] &&
-    result[playerId].status === "loser";
+    (result &&
+      result.length > 0 &&
+      result[playerId] &&
+      result[playerId].status === "loser") ||
+    playerId !== roundTime;
   return (
     <Container className={styles.container}>
       <Fab
@@ -43,6 +52,21 @@ export default function ActionMenu({ isDealer, playerId }: Props) {
       >
         <AddIcon />
         Carta
+      </Fab>
+      <Fab
+        onClick={() => surrender(playerId)}
+        variant="extended"
+        disabled={
+          isDealer ||
+          (players[playerId].playerStatus === "stoped" && !isDealer) ||
+          iconsDisabled
+        }
+        aria-label="add"
+        color="secondary"
+        className={styles.surrenderIcon}
+      >
+        <ExitToAppIcon />
+        Rendição
       </Fab>
 
       <Fab

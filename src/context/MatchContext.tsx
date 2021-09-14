@@ -3,6 +3,7 @@ import router from "next/router";
 import { createContext, useEffect, useState } from "react";
 import generateDeck from "../helpers/generateDeck";
 import setCardValue from "../helpers/setCardValue";
+import updateRoundTime from "../helpers/updateRoundTime";
 import verifyMatchStatus from "../helpers/verifyMatchStatus";
 import verifyResult from "../helpers/verifyResult";
 import DeckService from "../services/DeckService";
@@ -11,24 +12,28 @@ type matchContextType = {
   players: Array<PlayerInterface>;
   setPlayers: any;
   requestCard: any;
+  roundTime: number;
   matchStatus: string;
   setMatchStatus: any;
   setPlayersNumber: any;
   changePlayerStatus: any;
   result: Array<ResultInterface>;
   resetContext: any;
+  surrender: any;
 };
 
 const matchContextDefaultValues: matchContextType = {
   players: [],
   result: [],
   matchStatus: "playersRound",
+  roundTime: 1,
   setPlayers: () => null,
   requestCard: () => null,
   setMatchStatus: () => null,
   changePlayerStatus: () => null,
   resetContext: () => null,
   setPlayersNumber: () => null,
+  surrender: () => null,
 };
 
 const MatchContext = createContext<matchContextType>(matchContextDefaultValues);
@@ -59,6 +64,7 @@ function MatchContextProvider({ children }: any) {
   const [deckId, setDeckId] = useState<string>("");
   const [matchStatus, setMatchStatus] = useState<string>("playersRound");
   const [result, setResult] = useState<Array<ResultInterface>>([]);
+  const [roundTime, setRoundTime] = useState(1);
 
   useEffect(() => {
     generateDeck(playersNumber)
@@ -67,7 +73,7 @@ function MatchContextProvider({ children }: any) {
         setDeckId(result.deckId);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,9 +91,10 @@ function MatchContextProvider({ children }: any) {
 
         setPlayers(setCardValue(newPlayers));
         updateStatuses(newPlayers);
+        setRoundTime(updateRoundTime(newPlayers, roundTime));
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -96,6 +103,7 @@ function MatchContextProvider({ children }: any) {
     newPlayers[id].playerStatus = status;
     setPlayers(newPlayers);
     updateStatuses(newPlayers);
+    setRoundTime(updateRoundTime(newPlayers, roundTime));
   }
 
   function resetContext() {
@@ -106,6 +114,13 @@ function MatchContextProvider({ children }: any) {
     router.reload();
   }
 
+  function surrender(id: number) {
+    let newPlayers = [...players];
+    newPlayers[id].playerStatus = "surrender";
+    setRoundTime(updateRoundTime(newPlayers, roundTime));
+    updateStatuses(newPlayers);
+  }
+
   function updateStatuses(newPlayers: Array<PlayerInterface>) {
     const currentResult = verifyResult(newPlayers);
     const currentStatus = verifyMatchStatus(newPlayers, currentResult);
@@ -114,7 +129,9 @@ function MatchContextProvider({ children }: any) {
   }
 
   useEffect(() => {
-    updateStatuses(players);
+    if (players && players.length) {
+      updateStatuses(players);
+    }
   }, [players]);
 
   return (
@@ -123,12 +140,14 @@ function MatchContextProvider({ children }: any) {
         players,
         matchStatus,
         result,
+        roundTime,
         setPlayers,
         resetContext,
         requestCard,
         setMatchStatus,
         changePlayerStatus,
         setPlayersNumber,
+        surrender,
       }}
     >
       {children}

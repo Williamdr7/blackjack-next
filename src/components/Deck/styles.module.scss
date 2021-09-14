@@ -2,6 +2,9 @@
   margin: auto;
   position: absolute;
   bottom: 120px;
+  @media (max-width: 1280px) {
+    bottom: 200px;
+  }
 }
 .cardContainer {
   display: flex !important;
