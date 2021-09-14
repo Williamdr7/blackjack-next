@@ -1,6 +1,6 @@
 import setInitialPlayers from "./setInitialPlayers";
 import DeckService from "../services/DeckService";
-export default async function generateDeck(playersNumber: number) {
+export default async function generateDeck(playersNumber: any) {
   let newPlayers = [...setInitialPlayers(playersNumber)];
   let deckId = "";
   await DeckService.createDeck()

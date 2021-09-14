@@ -11,7 +11,7 @@ type Props = {
   numberOfPlayers: number;
 };
 const Match = (props: Props) => {
-  const { players, matchStatus, roundTime, result, setPlayersNumber } =
+  const { players, matchStatus, roundTime, result, setPlayersNumber, loading } =
     useContext(MatchContext);
 
   useEffect(() => {
@@ -35,6 +35,9 @@ const Match = (props: Props) => {
     }
     return false;
   };
+
+  if (loading || !result || !result.length || !result[1].playerId)
+    return <h4>Loading</h4>;
   return (
     <>
       <ResultModal isOpen={matchStatus === "finished"} />
@@ -84,11 +87,7 @@ const Match = (props: Props) => {
                 variant="h6"
                 color="primary"
                 noWrap
-              >
-                {result && result[0] && result[player.id].status === "loser"
-                  ? "LOSER"
-                  : player.playerStatus.toUpperCase()}
-              </Typography>
+              ></Typography>
 
               <Deck
                 showDealerScore={showDealerScore}

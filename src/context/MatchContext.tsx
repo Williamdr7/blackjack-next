@@ -1,5 +1,4 @@
-import { GetStaticProps } from "next";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { createContext, useEffect, useState } from "react";
 import generateDeck from "../helpers/generateDeck";
 import setCardValue from "../helpers/setCardValue";
@@ -20,6 +19,7 @@ type matchContextType = {
   result: Array<ResultInterface>;
   resetContext: any;
   surrender: any;
+  loading: boolean;
 };
 
 const matchContextDefaultValues: matchContextType = {
@@ -27,6 +27,7 @@ const matchContextDefaultValues: matchContextType = {
   result: [],
   matchStatus: "playersRound",
   roundTime: 1,
+  loading: true,
   setPlayers: () => null,
   requestCard: () => null,
   setMatchStatus: () => null,
@@ -59,18 +60,23 @@ export interface ResultInterface {
 }
 
 function MatchContextProvider({ children }: any) {
-  const [playersNumber, setPlayersNumber] = useState<number>(0);
+  const router = useRouter();
+  const [playersNumber, setPlayersNumber] = useState<
+    number | string | object | undefined
+  >(router.query.playersNumber);
   const [players, setPlayers] = useState<Array<PlayerInterface>>([]);
   const [deckId, setDeckId] = useState<string>("");
   const [matchStatus, setMatchStatus] = useState<string>("playersRound");
   const [result, setResult] = useState<Array<ResultInterface>>([]);
-  const [roundTime, setRoundTime] = useState(1);
+  const [roundTime, setRoundTime] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     generateDeck(playersNumber)
       .then((result) => {
         setPlayers(setCardValue(result.players));
         setDeckId(result.deckId);
+        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -107,29 +113,35 @@ function MatchContextProvider({ children }: any) {
   }
 
   function resetContext() {
+    setLoading(true);
+    setRoundTime(1);
     setPlayers([]);
-    setPlayersNumber(0);
     setMatchStatus("playersRound");
     setResult([]);
     router.reload();
   }
 
   function surrender(id: number) {
-    let newPlayers = [...players];
+    let newPlayers = players;
     newPlayers[id].playerStatus = "surrender";
+
+    console.log(newPlayers);
     setRoundTime(updateRoundTime(newPlayers, roundTime));
     updateStatuses(newPlayers);
+    setPlayers(newPlayers);
   }
 
   function updateStatuses(newPlayers: Array<PlayerInterface>) {
     const currentResult = verifyResult(newPlayers);
     const currentStatus = verifyMatchStatus(newPlayers, currentResult);
+
     setMatchStatus(currentStatus);
     setResult(currentResult);
   }
 
   useEffect(() => {
-    if (players && players.length) {
+    if (players.length) {
+      console.log("Chamou set geral");
       updateStatuses(players);
     }
   }, [players]);
@@ -141,6 +153,7 @@ function MatchContextProvider({ children }: any) {
         matchStatus,
         result,
         roundTime,
+        loading,
         setPlayers,
         resetContext,
         requestCard,

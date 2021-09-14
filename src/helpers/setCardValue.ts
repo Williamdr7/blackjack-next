@@ -12,6 +12,7 @@ export default function setCardValue(players: Array<PlayerInterface>) {
       } else {
         hasAs++;
       }
+      return true;
     });
 
     for (let i = 0; i < hasAs; i++) {
@@ -22,6 +23,7 @@ export default function setCardValue(players: Array<PlayerInterface>) {
     }
 
     newPlayers[i].roundPoints = playerScore;
+    return true;
   });
 
   return newPlayers;
