@@ -15,6 +15,7 @@ export default function Form() {
     formState: { errors },
   } = useForm();
   const onSubmit = (data: any) => {
+    console.log(data);
     router.push(`/match/${data.playersNumber}`);
   };
 
