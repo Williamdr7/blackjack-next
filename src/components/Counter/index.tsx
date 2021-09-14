@@ -3,7 +3,7 @@ import { Card, Typography } from "@material-ui/core";
 import styles from "./styles.module.scss";
 
 type Props = {
-  count: number;
+  count: number | string;
 };
 
 export default function Counter({ count }: Props) {

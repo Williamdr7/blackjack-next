@@ -46,11 +46,11 @@ export default async function generateDeck(playersNumber: number) {
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
       deckId = data.deck_id;
     })
-    .catch((error) => console.log(error));
+    .catch((error) => console.error(error));
 
   return { deckId, players: newPlayers };
 }

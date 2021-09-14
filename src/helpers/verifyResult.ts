@@ -11,6 +11,9 @@ export default function verifyResult(players: Array<PlayerInterface>) {
   let isTied = false;
   let highResult: any = { playerId: null, score: null };
   players.map((player) => {
+    if (player.playerStatus === "surrender") {
+      result = [...result, { playerId: player.id, status: "loser" }];
+    }
     if (player.roundPoints > highResult.score && player.roundPoints < 21) {
       highResult = { playerId: player.id, score: player.roundPoints };
     }
@@ -20,7 +23,11 @@ export default function verifyResult(players: Array<PlayerInterface>) {
     if (player.roundPoints > 21) {
       result = [...result, { playerId: player.id, status: "loser" }];
     }
-    if (player.roundPoints === 21) {
+    if (
+      (player.roundPoints === 21 && !player.isDeal) ||
+      (player.roundPoints === 21 &&
+        !players.find((playerObj) => playerObj.playerStatus === "playing"))
+    ) {
       result = [...result, { playerId: player.id, status: "winner" }];
     }
     if (player.roundPoints < 21) {
@@ -51,7 +58,6 @@ export default function verifyResult(players: Array<PlayerInterface>) {
       };
     }
   }
-  console.log(result);
 
   return result;
 }
