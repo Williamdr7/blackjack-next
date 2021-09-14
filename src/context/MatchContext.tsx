@@ -1,3 +1,4 @@
+import { GetStaticProps } from "next";
 import router from "next/router";
 import { createContext, useEffect, useState } from "react";
 import generateDeck from "../helpers/generateDeck";
@@ -21,9 +22,9 @@ type matchContextType = {
 const matchContextDefaultValues: matchContextType = {
   players: [],
   result: [],
+  matchStatus: "playersRound",
   setPlayers: () => null,
   requestCard: () => null,
-  matchStatus: "playersRound",
   setMatchStatus: () => null,
   changePlayerStatus: () => null,
   resetContext: () => null,
@@ -53,7 +54,7 @@ export interface ResultInterface {
 }
 
 function MatchContextProvider({ children }: any) {
-  const [playersNumber, setPlayersNumber] = useState<number>(4);
+  const [playersNumber, setPlayersNumber] = useState<number>(0);
   const [players, setPlayers] = useState<Array<PlayerInterface>>([]);
   const [deckId, setDeckId] = useState<string>("");
   const [matchStatus, setMatchStatus] = useState<string>("playersRound");
@@ -73,17 +74,21 @@ function MatchContextProvider({ children }: any) {
   }, [playersNumber]);
 
   function requestCard(playerId: number) {
-    DeckService.getCards(deckId, 1).then(({ data }) => {
-      let newPlayers = [...players];
+    DeckService.getCards(deckId, 1)
+      .then(({ data }) => {
+        let newPlayers = [...players];
 
-      newPlayers[playerId].cards = [
-        ...newPlayers[playerId].cards,
-        data.cards[0],
-      ];
+        newPlayers[playerId].cards = [
+          ...newPlayers[playerId].cards,
+          data.cards[0],
+        ];
 
-      setPlayers(setCardValue(newPlayers));
-      updateStatuses(newPlayers);
-    });
+        setPlayers(setCardValue(newPlayers));
+        updateStatuses(newPlayers);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function changePlayerStatus(id: number, status: string) {
@@ -95,7 +100,7 @@ function MatchContextProvider({ children }: any) {
 
   function resetContext() {
     setPlayers([]);
-    setPlayersNumber(2);
+    setPlayersNumber(0);
     setMatchStatus("playersRound");
     setResult([]);
     router.push("/");

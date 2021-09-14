@@ -5,8 +5,8 @@ export default async function generateDeck(playersNumber: number) {
   let deckId = "";
   await DeckService.createDeck()
     .then(async ({ data }) => {
-      await DeckService.getCards(data.deck_id, playersNumber * 2).then(
-        (response) => {
+      await DeckService.getCards(data.deck_id, playersNumber * 2)
+        .then((response) => {
           let cardsArray = response.data.cards;
           for (let i = 0; i < cardsArray.length; i++) {
             if (i < playersNumber) {
@@ -44,8 +44,10 @@ export default async function generateDeck(playersNumber: number) {
               }
             }
           }
-        }
-      );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       deckId = data.deck_id;
     })
     .catch((error) => console.log(error));

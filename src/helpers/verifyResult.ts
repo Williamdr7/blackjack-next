@@ -2,11 +2,20 @@ import { PlayerInterface, ResultInterface } from "../context/MatchContext";
 
 export default function verifyResult(players: Array<PlayerInterface>) {
   let result: Array<ResultInterface> = [];
-  const finished = !players.find((player) => player.playerStatus !== "stoped");
+  const finished = players.find(
+    (player) =>
+      result.find((res) => res.status === "winner") ||
+      result.find((res) => res.status === "draw") ||
+      (player.isDeal && player.playerStatus === "stoped")
+  );
+  let isTied = false;
   let highResult: any = { playerId: null, score: null };
   players.map((player) => {
     if (player.roundPoints > highResult.score && player.roundPoints < 21) {
       highResult = { playerId: player.id, score: player.roundPoints };
+    }
+    if (player.roundPoints == highResult.score) {
+      isTied = true;
     }
     if (player.roundPoints > 21) {
       result = [...result, { playerId: player.id, status: "loser" }];
@@ -25,11 +34,28 @@ export default function verifyResult(players: Array<PlayerInterface>) {
     }
   });
   if (!result.find((res) => res.status === "winner") && finished) {
-    result[highResult.playerId] = {
-      playerId: highResult.playerId,
-      status: "winner",
-    };
+    const hasDraw = players.filter(
+      (res) => res.roundPoints === highResult.score
+    );
+    if (hasDraw.length > 1) {
+      hasDraw.map((res) => {
+        result[res.id] = {
+          playerId: res.id,
+          status: "draw",
+        };
+      });
+    } else {
+      result[highResult.playerId] = {
+        playerId: highResult.playerId,
+        status: "winner",
+      };
+    }
   }
+  console.log(result);
 
   return result;
 }
+
+//todos pausados === finished?
+
+//highResult === plaw

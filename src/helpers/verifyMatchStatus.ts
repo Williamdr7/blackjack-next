@@ -4,29 +4,31 @@ export default function verifyMatchStatus(
   players: Array<PlayerInterface>,
   result: Array<ResultInterface>
 ) {
-  const hasPlayerPlaying = players.find(
+  let currentPlayers = players;
+  result
+    .filter((res) => res.status === "loser")
+    .map((player) => (currentPlayers[player.playerId].playerStatus = "stoped"));
+
+  const hasPlayerPlaying = currentPlayers.find(
     (player: PlayerInterface) =>
       player.playerStatus !== "stoped" && !player.isDeal
   );
 
+  const allPlayersAreLosers =
+    result.filter((res) => res.status === "loser").length ===
+    currentPlayers.length - 1;
+
   if (
-    !hasPlayerPlaying &&
-    players &&
-    players[0] &&
-    players[0].playerStatus === "playing"
-  ) {
-    console.log("dealerRound");
-    return "dealerRound";
-  }
-  if (
-    (!hasPlayerPlaying &&
-      players &&
-      players[0] &&
-      players[0].playerStatus !== "playing") ||
+    (!hasPlayerPlaying && allPlayersAreLosers) ||
     result.find((value) => value.status === "winner") ||
+    result.find((value) => value.status === "draw") ||
     result.filter((value) => value.status === "loser").length ===
-      players.length - 1
+      currentPlayers.length - 1
   )
     return "finished";
-  else return "running";
+
+  if (!hasPlayerPlaying) {
+    return "dealerRound";
+  }
+  return "running";
 }
